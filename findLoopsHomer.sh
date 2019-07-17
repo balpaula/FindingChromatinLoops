@@ -1,8 +1,8 @@
 #!/bin/bash
 
 usage() {
-	echo "This scripts takes the following arguments:"
-	echo -e " \t BAM file, output directory"
+	echo "Command takes the followinf form:"
+	echo -e " \t findLoopsHomer.sh BAMfile outputDirectory [options]"
 	echo
 	echo "Homer options can also be specified:"
 	echo -e " \t -c numberCPUs -r resolution -w window -g genome (e.g. hg38) -p badRegions.bed"
