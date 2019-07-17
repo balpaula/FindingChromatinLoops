@@ -44,7 +44,10 @@ echo "BAM file used $INFILE"
 echo "Results will be stored in directory $OUTDIR"/
 echo
 
-mkdir $OUTDIR/
+if [ ! -d "$OUTDIR" ]; then
+	mkdir $OUTDIR/
+fi
+
 
 echo "Converting BAM file to HiCsummary format..."
 
