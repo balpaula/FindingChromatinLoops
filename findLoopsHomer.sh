@@ -101,5 +101,5 @@ echo
 
 cd ..
 
-echo "Done. Results in $OUTDIR/HomerDir/HomerDir.loop.2D.bed significantLoopsHomer.bed"
+echo "Done. Results in $OUTDIR/HomerDir/HomerDir.loop.2D.bed"
 
