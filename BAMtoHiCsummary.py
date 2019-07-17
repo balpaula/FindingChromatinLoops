@@ -6,7 +6,7 @@ from subprocess import Popen, PIPE
 fname = sys.argv[1]
 outdir = sys.argv[2]
 cpus = sys.argv[3]
-proc = Popen('samtools view -@{} {} | head -n 1000'.format(cpus,fname),shell=True,stdout=PIPE)
+proc = Popen('samtools view -@{} {}'.format(cpus,fname),shell=True,stdout=PIPE)
 
 out = open('{}/HiCsummary.txt'.format(outdir), 'w')
 
