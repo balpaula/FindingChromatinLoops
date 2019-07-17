@@ -32,11 +32,10 @@ while getopts ":r:c:w:g:p:" arg; do
   esac
 done
 
-if [  $# -le 1 ] 
-	then 
-		usage
-		exit 1
-	fi
+if [  $# -le 1 ]; then 
+	usage
+	exit 1
+fi
 
 echo "Initializing findLoopsHomer"
 echo
