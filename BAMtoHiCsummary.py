@@ -1,21 +1,52 @@
 #!/usr/bin/env python
 
-import sys
-from subprocess import Popen, PIPE
+from os              import system, path as ospath
+from subprocess      import Popen, PIPE
+from multiprocessing import cpu_count
+from argparse        import ArgumentParser
 
-fname = sys.argv[1]
-outdir = sys.argv[2]
-cpus = sys.argv[3]
-proc = Popen('samtools view -@{} {}'.format(cpus,fname),shell=True,stdout=PIPE)
 
-out = open('{}/HiCsummary.txt'.format(outdir), 'w')
+def main():
+    opts = get_options()
 
-for line in proc.stdout:
-	rID, flag, c1, b1, _, l1, c2, b2, tl, _, _, tc, s1, s2 = line.split()
-	if c2 == "=":
-		c2 = c1 
-	sr1 = '+' if s1 == 'S1:i:1' else '-'
-	sr2 = '+' if s2 == 'S2:i:1' else '-'
-	out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\t\n'.format(rID, c1, b1, sr1, c2, b2, sr2))
+    fname = opts.inbam
+    outdir = opts.outdir
+    cpus = opts.ncpus
 
-out.close()
+    proc = Popen('samtools view -@{} {}'.format(cpus,fname), shell=True, stdout=PIPE)
+
+    system("mkdir -p {}".format(outdir))
+
+    out = open(ospath.join(outdir, 'HiCsummary.txt'), 'w')
+
+    # not much faster, but also checks that s1 trully comes from read-end 1
+    dico_strand1 = {'S1:i:1': '+', 'S1:i:0': '-'}
+    dico_strand2 = {'S2:i:1': '+', 'S2:i:0': '-'}
+
+    for line in proc.stdout:
+        # stop at 14, some BAM have more fields
+        rID, _, c1, b1, _, _, c2, b2, _, _, _, _, s1, s2, _ = line.split('\t', 14)
+
+        if c2 == "=":
+            c2 = c1
+
+        out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\t\n'.format(
+                rID, c1, b1, dico_strand1[s1], c2, b2, dico_strand2[s2]))
+    out.close()
+
+
+def get_options():
+    parser = ArgumentParser()
+    parser.add_argument('-i', '--bam', dest='inbam', required=True, metavar='PATH',
+                        help='Input TADbit HiC-BAM file')
+    parser.add_argument('-o', '--out', dest='outdir', required=True, metavar='PATH',
+                        help='Outdir to store HiCsummary file')
+    parser.add_argument('-C', dest='ncpus', default=cpu_count(),
+                        type=int, help='[%(default)s] Number of CPUs used to read BAM')
+    opts = parser.parse_args()
+
+    return opts
+
+
+if __name__ == '__main__':
+    exit(main())
