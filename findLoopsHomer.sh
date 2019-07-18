@@ -22,6 +22,9 @@ WINDOW=15000
 GENOME=""
 BADREGIONS=""
 
+# PATH to HOMER directory
+HOMER=""
+
 while getopts ":r:c:w:g:p:" arg; do
   case $arg in
     r) RES=$OPTARG;;
@@ -32,7 +35,7 @@ while getopts ":r:c:w:g:p:" arg; do
   esac
 done
 
-if [  $# -le 1 ]; then 
+if [  $# -le 1 ]; then
 	usage
 	exit 1
 fi
@@ -50,7 +53,7 @@ fi
 
 echo "Converting BAM file to HiCsummary format..."
 
-python BAMtoHiCsummary.py $INFILE $OUTDIR $CPUS
+python BAMtoHiCsummary.py -i $INFILE -o $OUTDIR -c $CPUS
 
 echo "HiCsummary file ready"
 echo
@@ -59,7 +62,7 @@ cd $OUTDIR/
 
 echo "Creating TagDirectory for Homer results..."
 
-makeTagDirectory HomerDir/ -format HiCsummary HiCsummary.txt 2>&1 | tee -a mtd.out
+$HOMER/makeTagDirectory HomerDir/ -format HiCsummary HiCsummary.txt 2>&1 | tee -a mtd.out
 
 #makeTagDirectory HomerDir/ -format HiCsummary HiCsummary.txt 2>&1 | tee -a mtd.out
 
@@ -78,20 +81,20 @@ echo -e " \t CPUs $CPUS"
 if [ -z "$GENOME" ] && [ ! -z "$BADREGIONS" ]; then
 	echo -e " \t No genome specified, ignoring bad regions file"
 elif [ ! -z "$GENOME" ] && [ ! -z "$BADREGIONS" ]; then
-	echo -e " \t Genome $GENOME" 
+	echo -e " \t Genome $GENOME"
 	echo -e " \t Using bad regions file $BADREGIONS"
 elif [ ! -z "$GENOME" ]; then
 	echo -e " \t Genome $GENOME"
 fi
 
 if ( [ -z "$GENOME" ] && [ -z "$BADREGIONS" ] ) || [ -z "$GENOME" ]; then
-	findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW
+	$HOMER/findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW
 	#(findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW) > findTADsAndLoops.out
 elif [ -z "$BADREGIONS" ]; then
-	findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW -genome $GENOME
+	  $HOMER/findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW -genome $GENOME
 	#(findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW -genome $GENOME) > findTADsAndLoops.out
-else 
-	findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW -genome $GENOME -p $BADREGIONS
+else
+	  $HOMER/findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW -genome $GENOME -p $BADREGIONS
 	#(findTADsAndLoops.pl find HomerDir/ -cpu $CPUS -res $RES -window $WINDOW -genome $GENOME -p $BADREGIONS) > findTADsAndLoops.out
 fi
 
