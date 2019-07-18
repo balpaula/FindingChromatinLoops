@@ -46,7 +46,7 @@ def get_options():
 						help='Input 4dn format header with pairs format, columns and chromsize')
 	parser.add_argument('-o', '--out', dest='outdir', required=True, metavar='PATH',
 						help='Outdir to store 4dn file')
-	parser.add_argument('-C', dest='ncpus', default=cpu_count(),
+	parser.add_argument('-c', dest='ncpus', default=cpu_count(),
                         type=int, help='[%(default)s] Number of CPUs used to read BAM')
 	opts = parser.parse_args()
 

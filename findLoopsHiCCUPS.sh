@@ -22,11 +22,13 @@ HEADER=$2
 NHEADER=$(echo $(wc -l "$HEADER" | awk '{ print $1 }'))
 OUTDIR=$3
 GENOME=$4
-JUICERDIR="./hiccups_cluster/Juicer/scripts/common/juicer_tools.jar"
 CPUS=1
 RES=""
 CHR=""
 MTR=""
+
+# PATH to JUICER directory
+JUICERDIR="./hiccups_cluster/Juicer/scripts/common/juicer_tools.jar"
 
 while getopts ":r:C:c:m:" arg; do
   case $arg in
@@ -56,7 +58,7 @@ fi
 
 echo "Converting BAM file to 4dn format..."
 
-python BAMto4DNDCIC.py $INFILE $HEADER $OUTDIR $CPUS
+python BAMto4DNDCIC.py -i $INFILE -H $HEADER -o $OUTDIR -c $CPUS
 
 echo "4dn file ready"
 echo
