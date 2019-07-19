@@ -1,0 +1,52 @@
+BootStrap: docker
+From:neurodebian:jessie
+
+%help
+  minimal Homer container
+
+%environment
+  LANG=C.UTF-8 
+  LC_ALL=C.UTF-8
+  PATH="/usr/local/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+  export PATH LANG LC_ALL
+
+%post
+
+  # for R
+  echo "deb-src ftp://ftp.de.debian.org/debian/ jessie main contrib" >> /etc/apt/sources.list
+
+  apt-get update --fix-missing
+
+  apt-get -y build-dep libxml2-dev
+  apt-get -y build-dep libcurl4-gnutls-dev
+  apt-get -y install dirmngr libcurl4-gnutls-dev
+
+  # apt install utilities
+  apt-get update --fix-missing && \
+  apt-get install -y unzip build-essential wget bzip2 --no-install-recommends
+
+  #############################################################################
+  # conda
+  echo 'export PATH=/opt/conda/bin:$PATH' > /etc/profile.d/conda.sh && \
+  wget --quiet --no-check-certificate https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh \
+      -O $HOME/miniconda.sh
+  /bin/bash $HOME/miniconda.sh -b -p /usr/local/anaconda
+  rm $HOME/miniconda.sh
+  
+  export PATH="/usr/local/anaconda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+  conda config --set always_yes yes --set changeps1 no
+  conda update -q conda
+  conda info -a
+
+  #############################################################################
+  # homer
+  conda install -c bioconda homer
+
+%runscript
+  echo "Wecome to Homer Singularity container"
+  exec /bin/bash --norc
+  # to run jupyter the notebok has to be built and installed as writable (with sudo)
+  # echo "Starting notebook..."
+  # echo "Open browser to localhost:8888"
+  # exec /opt/conda/bin/jupyter notebook --notebook-dir=/opt/notebooks --ip='*' --allow-root --port=8888 --no-browser
