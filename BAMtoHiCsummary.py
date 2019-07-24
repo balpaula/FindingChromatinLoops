@@ -30,8 +30,11 @@ def main():
         if c2 == "=":
             c2 = c1
 
-        out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\t\n'.format(
-                rID, c1, b1, dico_strand1[s1], c2, b2, dico_strand2[s2]))
+        try:
+		out.write('{}\t{}\t{}\t{}\t{}\t{}\t{}\t\n'.format(
+	        	rID, c1, b1, dico_strand1[s1], c2, b2, dico_strand2[s2]))
+	except KeyError:
+		pass
     out.close()
 
 
