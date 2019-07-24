@@ -25,10 +25,10 @@ BADREGIONS=""
 # PATH to HOMER directory
 HOMER=""
 
-while getopts ":r:c:w:g:p:" arg; do
+while getopts ":r:C:w:g:p:" arg; do
   case $arg in
     r) RES=$OPTARG;;
-    c) CPUS=$OPTARG;;
+    C) CPUS=$OPTARG;;
 	w) WINDOW=$OPTARG;;
 	g) GENOME=$OPTARG;;
 	p) BADREGIONS=$OPTARG;;
@@ -53,7 +53,7 @@ fi
 
 echo "Converting BAM file to HiCsummary format..."
 
-python BAMtoHiCsummary.py -i $INFILE -o $OUTDIR -c $CPUS
+python BAMtoHiCsummary.py -i $INFILE -o $OUTDIR -C $CPUS
 
 echo "HiCsummary file ready"
 echo
